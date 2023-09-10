@@ -18,9 +18,9 @@ namespace jtg {
 			0, 0, 0, 1
 		);
 
+		translate(pos);
 		scaleBy(scale);
 		rotate(rot);
-		translate(pos);
 	}
 
 	void Transform::translate(glm::vec3 trans) {

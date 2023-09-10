@@ -7,18 +7,21 @@
 
 namespace jtg {
 
-	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-	};
 
-	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};
+	void Renderer::setMesh(const Mesh& mesh) const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, 
+			sizeof(float) * mesh.verts.size(), 
+			&mesh.verts.front(),
+			GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
+			sizeof(int) * mesh.tris.size(), 
+			&mesh.tris.front(),
+			GL_STATIC_DRAW);
+	}
 
 	Renderer::Renderer()
 	{
@@ -28,22 +31,20 @@ namespace jtg {
 		unsigned char* texData = stbi_load("PaintedWood007C_1K-PNG_Color.png", &width, &height, &nrChannels, 0);
 
 		glGenVertexArrays(1, &vao);
+
+		glGenBuffers(1, &vbo);
+		glGenBuffers(1, &ebo);
+		glGenTextures(1, &tex);
+
+
 		glBindVertexArray(vao);
 
-		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		stbi_image_free(texData);
-
-		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &ebo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		unsigned long stride = 8 * sizeof(float);
 
@@ -58,9 +59,12 @@ namespace jtg {
 		// uvs
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
+
+		glBindVertexArray(0);
+		stbi_image_free(texData);
 	}
 
-	void Renderer::renderAt(glm::mat4 trans) const {
+	void Renderer::renderAt(const glm::mat4& trans) const {
 
 		shader.use();
 

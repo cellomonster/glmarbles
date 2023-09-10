@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -7,12 +9,19 @@
 #include "shader.h"
 
 namespace jtg {
+
+	struct Mesh {
+		std::vector<float> verts;
+		std::vector<unsigned int> tris;
+	};
+
 	class Renderer
 	{
 	public:
 		Renderer();
 
-		void renderAt(glm::mat4 pos) const;
+		void setMesh(const Mesh& mesh) const;
+		void renderAt(const glm::mat4& pos) const;
 
 	private:
 
