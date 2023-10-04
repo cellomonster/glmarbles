@@ -1,34 +1,28 @@
+#pragma once
+
 #include "transform.h"
 
 namespace jtg {
 
-	class Collider {
+	class Body {
 
 	public:
-		Transform trans;
-	};
-
-	class Rigidbody {
-
-	public:
-		Transform trans;
+		Transform *trans;
 		glm::vec3 vel;
 		glm::vec3 angVel;
 	};
 
-	class BoxCol : public Collider {
-
-	public:
+	struct BoxCol {
+		Transform *trans;
 		glm::vec3 size;
-
-
 	};
 
-	class SphereCol : public Collider {
-	public:
+	struct SphereCol {
+		Transform* trans;
 		float rad;
 	};
 
 	static glm::vec3 SphereOnBox(SphereCol sphere, BoxCol box);
-	static glm::vec3 ClampToBox(glm::vec3 pos, BoxCol box);
+	static glm::vec3 ClampToBox(glm::vec3 pos, glm::vec3 size);
+	static float clamp(float f, float min, float max);
 }

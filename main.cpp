@@ -10,6 +10,7 @@
 #include "shader.h"
 #include "renderer.h"
 #include "mesh.h"
+#include "collider.h"
 
 void onFramebufferSize(GLFWwindow* window, int width, int height)
 {
@@ -65,9 +66,14 @@ int main()
 	Actor block;
 	block.rend.setMesh(jtg::blockMesh(1, 1, 1));
 	block.trans.pivot = glm::vec3(-.5, -.5, -.5);
+	jtg::BoxCol blockCol;
+	blockCol.size = glm::vec3(1, 1, 1);
+	blockCol.trans = &block.trans;
 
 	Actor marble;
 	marble.rend.setMesh(jtg::polyhedronMesh(1));
+	jtg::SphereCol marbleCol;
+	marbleCol.trans = &marble.trans;
 
 	// printf("mat: %s\n", glm::to_string(trans.mat));
 
@@ -80,7 +86,7 @@ int main()
 
 		// draw
 
-		t += 0.01;
+		t += 0.01f;
 
 		marble.trans.rot = jtg::Transform::eulerToQuat(glm::vec3(0, t * 50, 0));
 		marble.trans.pos = glm::vec3(cos(t), sin(t), 0);
@@ -95,7 +101,11 @@ int main()
 		// cam.track(.pos);
 		cam.updateUbo();
 
-		
+		glm::vec3 col = jtg::SphereOnBox(marbleCol, blockCol);
+
+		if (col != glm::vec3(0, 0, 0)) {
+			std::cout << glm::to_string(col) << std::endl;
+		}
 
 		glfwSwapBuffers(mainWindow);
 	}
