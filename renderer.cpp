@@ -7,20 +7,21 @@
 
 namespace jtg {
 
-
-	void Renderer::setMesh(const Mesh& mesh) const
+	void Renderer::setMesh(const Mesh& newMesh)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, 
-			sizeof(float) * mesh.verts.size(), 
-			&mesh.verts.front(),
+			sizeof(float) * newMesh.verts.size(), 
+			&newMesh.verts.front(),
 			GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-			sizeof(int) * mesh.tris.size(), 
-			&mesh.tris.front(),
+			sizeof(int) * newMesh.tris.size(), 
+			&newMesh.tris.front(),
 			GL_STATIC_DRAW);
+
+		mesh = newMesh;
 	}
 
 	Renderer::Renderer()
@@ -28,7 +29,7 @@ namespace jtg {
 		shader = Shader("texture.vs", "texture.fs");
 
 		int width, height, nrChannels;
-		unsigned char* texData = stbi_load("PaintedWood007C_1K-PNG_Color.png", &width, &height, &nrChannels, 0);
+		unsigned char* texData = stbi_load("test.png", &width, &height, &nrChannels, 0);
 
 		glGenVertexArrays(1, &vao);
 
@@ -52,7 +53,7 @@ namespace jtg {
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)(0 * sizeof(float)));
 		glEnableVertexAttribArray(0);
 
-		// color
+		// normal
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
@@ -61,18 +62,18 @@ namespace jtg {
 		glEnableVertexAttribArray(2);
 
 		glBindVertexArray(0);
+
 		stbi_image_free(texData);
 	}
 
 	void Renderer::renderAt(const glm::mat4& trans) const {
 
 		shader.use();
+		shader.transform(trans);
 
 		glBindVertexArray(vao);
 
-		shader.transform(trans);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh.tris.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-}
+} 

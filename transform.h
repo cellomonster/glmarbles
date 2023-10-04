@@ -16,11 +16,12 @@ namespace jtg {
 	public:
 		static glm::quat eulerToQuat(glm::vec3 euler);
 
+		glm::vec3 pivot = glm::vec3(0.0);
 		glm::vec3 pos = glm::vec3(0.0);
 		glm::quat rot = glm::quat(1.0, 0.0, 0.0, 0.0);
 		glm::vec3 scale = glm::vec3(1.0);
 
-		void recalculateMatrix();
+		void recalc();
 
 		glm::mat4 mat = glm::mat4(1.0);
 

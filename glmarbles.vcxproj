@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="transform.h" />
@@ -148,12 +149,14 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="PaintedWood007C_1K-PNG_Color.png" />
+    <Image Include="test.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

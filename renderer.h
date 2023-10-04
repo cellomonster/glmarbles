@@ -7,25 +7,23 @@
 
 #include "transform.h"
 #include "shader.h"
+#include "mesh.h"
 
 namespace jtg {
-
-	struct Mesh {
-		std::vector<float> verts;
-		std::vector<unsigned int> tris;
-	};
 
 	class Renderer
 	{
 	public:
 		Renderer();
 
-		void setMesh(const Mesh& mesh) const;
+		Shader shader;
+
+		void setMesh(const Mesh& mesh);
 		void renderAt(const glm::mat4& pos) const;
 
 	private:
 
-		Shader shader;
+		Mesh mesh;
 
 		unsigned int vbo = 0;
 		unsigned int vao = 0;
@@ -35,4 +33,5 @@ namespace jtg {
 		
 	};
 };
+
 

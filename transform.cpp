@@ -6,7 +6,7 @@ namespace jtg {
 		return f * f;
 	}
 
-	void Transform::recalculateMatrix()
+	void Transform::recalc()
 	{
 		//right = glm::normalize(glm::cross(worldUp, forw));
 		//up = glm::normalize(glm::cross(forw, right));
@@ -21,6 +21,7 @@ namespace jtg {
 		translate(pos);
 		scaleBy(scale);
 		rotate(rot);
+		translate(-pivot);
 	}
 
 	void Transform::translate(glm::vec3 trans) {
