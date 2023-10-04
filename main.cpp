@@ -41,6 +41,7 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(mainWindow);
+	glfwSwapInterval(1);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -79,7 +80,7 @@ int main()
 
 		// draw
 
-		t += 0.001;
+		t += 0.01;
 
 		marble.trans.rot = jtg::Transform::eulerToQuat(glm::vec3(0, t * 50, 0));
 		marble.trans.pos = glm::vec3(cos(t), sin(t), 0);

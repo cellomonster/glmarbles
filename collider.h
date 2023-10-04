@@ -1,18 +1,33 @@
+#include "transform.h"
+
 namespace jtg {
 
-	class Collider
-	{
+	class Collider {
+
 	public:
-		public Transform trans;
+		Transform trans;
 	};
 
-	class BoxCollider : public Collider {
-		public glm::vec3 size;
+	class Rigidbody {
+
+	public:
+		Transform trans;
+		glm::vec3 vel;
+		glm::vec3 angVel;
+	};
+
+	class BoxCol : public Collider {
+
+	public:
+		glm::vec3 size;
 
 
 	};
 
-	ProjPointOnPlane(glm::vec3 x, glm::vec3 y, glm::vec3 p) {
+	class SphereCol : public Collider {
+	public:
+		float rad;
+	};
 
-	}
+	static glm::vec3 SphereOnBox(SphereCol sphere, BoxCol box);
 }
