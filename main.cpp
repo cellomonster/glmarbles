@@ -12,6 +12,44 @@
 #include "mesh.h"
 #include "collider.h"
 
+
+struct Block {
+	jtg::Transform trans;
+	jtg::Renderer rend;
+	jtg::BoxCol col;
+
+	Block() : trans(), rend(), col() {
+		trans = jtg::Transform();
+
+		rend.trans = trans;
+		col.trans = trans;
+	}
+
+	inline void setSize(glm::vec3 size) {
+		rend.setMesh(jtg::blockMesh(size));
+		col.size = size;
+	}
+};
+
+struct Marble {
+	jtg::Transform trans;
+	jtg::Renderer rend;
+	jtg::SphereCol col;
+	jtg::Body body;
+
+	Marble() {
+		rend.trans = trans;
+		col.trans = trans;
+		body.trans = trans;
+
+		float rad = .5f;
+
+		rend.setMesh(jtg::polyhedronMesh(.5f));
+		col.rad = rad;
+	}
+};
+
+
 void onFramebufferSize(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -20,14 +58,8 @@ void onFramebufferSize(GLFWwindow* window, int width, int height)
 float t;
 glm::vec2 winSize = glm::vec2(800, 800);
 
-struct Actor {
-	jtg::Renderer rend;
-	jtg::Transform trans;
-};
-
 int main()
 {
-
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -63,19 +95,14 @@ int main()
 	cam.recalc();
 	cam.orient(glm::vec3(0, 0, 3), glm::vec3(0, 0, -1));
 
-	Actor block;
-	block.rend.setMesh(jtg::blockMesh(1, 1, 1));
-	block.trans.pivot = glm::vec3(-.5, -.5, -.5);
-	jtg::BoxCol blockCol;
-	blockCol.size = glm::vec3(1, 1, 1);
-	blockCol.trans = &block.trans;
+	Block block;
+	block.setSize(glm::vec3(5, 2, 5));
+	block.trans.pos = glm::vec3(0, -1, 0);
+	block.trans.recalc();
 
-	Actor marble;
-	marble.rend.setMesh(jtg::polyhedronMesh(1));
-	jtg::SphereCol marbleCol;
-	marbleCol.trans = &marble.trans;
-
-	// printf("mat: %s\n", glm::to_string(trans.mat));
+	Marble marble;
+	marble.trans.pos = glm::vec3(0, .5f, 0);
+	marble.trans.recalc();
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
@@ -86,26 +113,24 @@ int main()
 
 		// draw
 
-		t += 0.01f;
-
-		marble.trans.rot = jtg::Transform::eulerToQuat(glm::vec3(0, t * 50, 0));
-		marble.trans.pos = glm::vec3(cos(t), sin(t), 0);
-		marble.trans.recalc();
-		marble.rend.renderAt(marble.trans.mat);
-
-		block.trans.rot = jtg::Transform::eulerToQuat(glm::vec3(45, t * 50, 45));
-		block.trans.pos = glm::vec3(sin(t), cos(t), -0.2);
-		block.trans.recalc();
-		block.rend.renderAt(block.trans.mat);
-
-		// cam.track(.pos);
 		cam.updateUbo();
 
-		glm::vec3 col = jtg::SphereOnBox(marbleCol, blockCol);
+		t += 0.05f;
 
-		if (col != glm::vec3(0, 0, 0)) {
-			std::cout << glm::to_string(col) << std::endl;
-		}
+		block.trans.rot = jtg::Transform::eulerToQuat(glm::vec3(0, t, 0));
+		block.trans.recalc();
+		block.rend.render();
+
+		//bool sphereColliding = jtg::SphereOnBox(marble.col, block.col);
+
+		//if (sphereColliding) {
+		//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//}
+		//else {
+		//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//}
+
+		
 
 		glfwSwapBuffers(mainWindow);
 	}

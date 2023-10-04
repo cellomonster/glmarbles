@@ -16,9 +16,11 @@ namespace jtg {
 	public:
 		Renderer();
 
+		Transform trans;
 		Shader shader;
 
 		void setMesh(const Mesh& mesh);
+		void render() const;
 		void renderAt(const glm::mat4& pos) const;
 
 	private:
@@ -29,8 +31,6 @@ namespace jtg {
 		unsigned int vao = 0;
 		unsigned int ebo = 0;
 		unsigned int tex = 0;
-
-		
 	};
 };
 

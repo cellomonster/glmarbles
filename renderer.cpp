@@ -66,14 +66,18 @@ namespace jtg {
 		stbi_image_free(texData);
 	}
 
-	void Renderer::renderAt(const glm::mat4& trans) const {
+	void Renderer::renderAt(const glm::mat4& mat) const {
 
 		shader.use();
-		shader.transform(trans);
+		shader.transform(mat);
 
 		glBindVertexArray(vao);
 
 		glDrawElements(GL_TRIANGLES, mesh.tris.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+	}
+
+	void Renderer::render() const {
+		renderAt(trans.mat);
 	}
 } 

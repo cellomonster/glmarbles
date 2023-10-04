@@ -1,47 +1,118 @@
 #include "mesh.h"
 
+#include <glm/glm.hpp>
+
 namespace jtg {
 
-	Mesh blockMesh(const float& x, const float& y, const float& z) {
+	//Mesh blockMeshCorner(const float& x, const float& y, const float& z) {
+	//	Mesh m;
+
+	//	m.verts = {
+	//		// pos   norm      uv
+	//		// bottom
+	//		0, 0, 0, 0, -1, 0, x, 0, // 0
+	//		x, 0, 0, 0, -1, 0, 0, 0, // 1
+	//		x, 0, z, 0, -1, 0, 0, z, // 2
+	//		0, 0, z, 0, -1, 0, x, z, // 3
+
+	//		// top
+	//		0, y, 0, 0, 1, 0, 0, 0, // 4
+	//		0, y, z, 0, 1, 0, 0, z, // 5
+	//		x, y, z, 0, 1, 0, x, z, // 6
+	//		x, y, 0, 0, 1, 0, x, 0, // 7
+
+	//		// left
+	//		0, 0, 0, -1, 0, 0, 0, y, // 8
+	//		0, 0, z, -1, 0, 0, z, y, // 9
+	//		0, y, z, -1, 0, 0, z, 0, // 10
+	//		0, y, 0, -1, 0, 0, 0, 0, // 11
+
+	//		// right
+	//		x, 0, 0, 1, 0, 0, z, y, // 12
+	//		x, y, 0, 1, 0, 0, z, 0, // 13
+	//		x, y, z, 1, 0, 0, 0, 0, // 14
+	//		x, 0, z, 1, 0, 0, 0, y, // 15
+
+	//		// back
+	//		0, 0, 0, 0, 0, -1, x, y, // 16
+	//		0, y, 0, 0, 0, -1, x, 0, // 18
+	//		x, y, 0, 0, 0, -1, 0, 0, // 18
+	//		x, 0, 0, 0, 0, -1, 0, y, // 19
+
+	//		// front
+	//		0, 0, z, 0, 0, 1, 0, y, // 20
+	//		x, 0, z, 0, 0, 1, x, y, // 21
+	//		x, y, z, 0, 0, 1, x, 0, // 22
+	//		0, y, z, 0, 0, 1, 0, 0, // 23
+	//	};
+
+	//	m.tris = {
+	//		0, 1, 2,
+	//		2, 3, 0,
+
+	//		4, 5, 6,
+	//		6, 7, 4,
+
+	//		8, 9, 10,
+	//		10, 11, 8,
+
+	//		12, 13, 14,
+	//		14, 15, 12,
+
+	//		16, 17, 18,
+	//		18, 19, 16,
+
+	//		20, 21, 22,
+	//		22, 23, 20,
+	//	};
+
+	//	return m;
+	//}
+
+	Mesh blockMesh(const glm::vec3& size) {
 		Mesh m;
+
+		glm::vec3 ax = size * .5f;
+
+		glm::vec3 in = -ax;
 
 		m.verts = {
 			// pos   norm      uv
 			// bottom
-			0, 0, 0, 0, -1, 0, x, 0, // 0
-			x, 0, 0, 0, -1, 0, 0, 0, // 1
-			x, 0, z, 0, -1, 0, 0, z, // 2
-			0, 0, z, 0, -1, 0, x, z, // 3
+			in.x, in.y, in.z, 0, -1, 0, size.x, 0, // 0
+			ax.x, in.y, in.z, 0, -1, 0, 0, 0, // 1
+			ax.x, in.y, ax.z, 0, -1, 0, 0,size.z, // 2
+			in.x, in.y, ax.z, 0, -1, 0, size.x, size.z, // 3
 
 			// top
-			0, y, 0, 0, 1, 0, 0, 0, // 4
-			0, y, z, 0, 1, 0, 0, z, // 5
-			x, y, z, 0, 1, 0, x, z, // 6
-			x, y, 0, 0, 1, 0, x, 0, // 7
+			in.x, ax.y, in.z, 0, 1, 0, 0, 0, // 4
+			in.x, ax.y, ax.z, 0, 1, 0, 0, size.z, // 5
+			ax.x, ax.y, ax.z, 0, 1, 0, size.x, size.z, // 6
+			ax.x, ax.y, in.z, 0, 1, 0, size.x, 0, // 7
 
 			// left
-			0, 0, 0, -1, 0, 0, 0, y, // 8
-			0, 0, z, -1, 0, 0, z, y, // 9
-			0, y, z, -1, 0, 0, z, 0, // 10
-			0, y, 0, -1, 0, 0, 0, 0, // 11
+			in.x, in.y, in.z, -1, 0, 0, 0, size.y, // 8
+			in.x, in.y, ax.z, -1, 0, 0, size.z, size.y, // 9
+			in.x, ax.y, ax.z, -1, 0, 0, size.z, 0, // 10
+			in.x, ax.y, in.z, -1, 0, 0, 0, 0, // 11
 
 			// right
-			x, 0, 0, 1, 0, 0, z, y, // 12
-			x, y, 0, 1, 0, 0, z, 0, // 13
-			x, y, z, 1, 0, 0, 0, 0, // 14
-			x, 0, z, 1, 0, 0, 0, y, // 15
+			ax.x, in.y, in.z, 1, 0, 0, size.z, size.y, // 12
+			ax.x, ax.y, in.z, 1, 0, 0, size.z, 0, // 13
+			ax.x, ax.y, ax.z, 1, 0, 0, 0, 0, // 14
+			ax.x, in.y, ax.z, 1, 0, 0, 0, size.y, // 15
 
 			// back
-			0, 0, 0, 0, 0, -1, x, y, // 16
-			0, y, 0, 0, 0, -1, x, 0, // 18
-			x, y, 0, 0, 0, -1, 0, 0, // 18
-			x, 0, 0, 0, 0, -1, 0, y, // 19
+			in.x, in.y, in.z, 0, 0, -1, size.x, size.y, // 16
+			in.x, ax.y, in.z, 0, 0, -1, size.x, 0, // 18
+			ax.x, ax.y, in.z, 0, 0, -1, 0, 0, // 18
+			ax.x, in.y, in.z, 0, 0, -1, 0, size.y, // 19
 
 			// front
-			0, 0, z, 0, 0, 1, 0, y, // 20
-			x, 0, z, 0, 0, 1, x, y, // 21
-			x, y, z, 0, 0, 1, x, 0, // 22
-			0, y, z, 0, 0, 1, 0, 0, // 23
+			in.x, in.y, ax.z, 0, 0, 1, 0, size.y, // 20
+			ax.x, in.y, ax.z, 0, 0, 1, size.x, size.y, // 21
+			ax.x, ax.y, ax.z, 0, 0, 1, size.x, 0, // 22
+			in.x, ax.y, ax.z, 0, 0, 1, 0, 0, // 23
 		};
 
 		m.tris = {
@@ -71,10 +142,10 @@ namespace jtg {
 	{
 		Mesh m;
 
-		const float t = (1.f + sqrt(5.f)) / 2.f;
+		const float t = (1.f + sqrt(5.f)) * .5f;
 
-		const float a = r / 2.f;
-		const float b = t * a;
+		const float b = r;
+		const float a = b / t;
 
 		m.verts = {
 			 b,  a,  0,  t,  1,  0, 0, 0,
