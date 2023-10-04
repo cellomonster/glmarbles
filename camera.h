@@ -16,7 +16,7 @@ namespace jtg {
 	{
 	public:
 		Camera();
-
+		
 		glm::vec3 forw = glm::vec3(0, 0, -1);
 		glm::mat4 proj = glm::mat4(1.0);
 

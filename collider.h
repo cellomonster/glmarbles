@@ -30,4 +30,5 @@ namespace jtg {
 	};
 
 	static glm::vec3 SphereOnBox(SphereCol sphere, BoxCol box);
+	static glm::vec3 ClampToBox(glm::vec3 pos, BoxCol box);
 }
