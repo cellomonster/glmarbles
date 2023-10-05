@@ -7,18 +7,18 @@ namespace jtg {
 	class Body {
 
 	public:
-		Transform trans;
+		Transform *trans;
 		glm::vec3 vel;
 		glm::vec3 angVel;
 	};
 
 	struct BoxCol {
-		Transform trans;
+		Transform *trans;
 		glm::vec3 size;
 	};
 
 	struct SphereCol {
-		Transform trans;
+		Transform *trans;
 		float rad;
 	};
 
