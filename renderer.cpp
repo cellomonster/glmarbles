@@ -78,6 +78,6 @@ namespace jtg {
 	}
 
 	void Renderer::render() const {
-		renderAt(trans.mat);
+		renderAt(trans->mat);
 	}
 } 

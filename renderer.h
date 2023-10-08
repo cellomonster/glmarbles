@@ -16,7 +16,7 @@ namespace jtg {
 	public:
 		Renderer();
 
-		Transform trans;
+		Transform *trans;
 		Shader shader;
 
 		void setMesh(const Mesh& mesh);

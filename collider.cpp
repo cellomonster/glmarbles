@@ -4,7 +4,7 @@
 
 bool jtg::SphereOnBox(SphereCol sphere, BoxCol box) {
 
-	glm::vec3 sphereLocal = glm::vec3((glm::inverse(box.trans.mat) * sphere.trans.mat)[3]);
+	glm::vec3 sphereLocal = glm::vec3((glm::inverse(box.trans->mat) * sphere.trans->mat)[3]);
 
 	glm::vec3 closest = ClampToBox(sphereLocal, box.size);
 

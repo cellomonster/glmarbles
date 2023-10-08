@@ -18,11 +18,10 @@ struct Block {
 	jtg::Renderer rend;
 	jtg::BoxCol col;
 
-	Block() : trans(), rend(), col() {
-		trans = jtg::Transform();
+	Block() {
 
-		rend.trans = trans;
-		col.trans = trans;
+		rend.trans = &trans;
+		col.trans = &trans;
 	}
 
 	inline void setSize(glm::vec3 size) {
@@ -38,9 +37,10 @@ struct Marble {
 	jtg::Body body;
 
 	Marble() {
-		rend.trans = trans;
-		col.trans = trans;
-		body.trans = trans;
+
+		rend.trans = &trans;
+		col.trans = &trans;
+		body.trans = &trans;
 
 		float rad = .5f;
 
@@ -93,7 +93,7 @@ int main()
 
 	jtg::Camera cam;
 	cam.recalc();
-	cam.orient(glm::vec3(0, 0, 3), glm::vec3(0, 0, -1));
+	cam.orient(glm::vec3(0, 1, 5), glm::vec3(0, 0, -1));
 
 	Block block;
 	block.setSize(glm::vec3(5, 2, 5));
@@ -106,6 +106,8 @@ int main()
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
+		t += 0.05f;
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0, 0, 0, 1);
 
@@ -115,22 +117,8 @@ int main()
 
 		cam.updateUbo();
 
-		t += 0.05f;
-
-		block.trans.rot = jtg::Transform::eulerToQuat(glm::vec3(0, t, 0));
-		block.trans.recalc();
 		block.rend.render();
-
-		//bool sphereColliding = jtg::SphereOnBox(marble.col, block.col);
-
-		//if (sphereColliding) {
-		//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//}
-		//else {
-		//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//}
-
-		
+		marble.rend.render();
 
 		glfwSwapBuffers(mainWindow);
 	}
