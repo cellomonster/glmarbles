@@ -160,6 +160,9 @@
     <Image Include="PaintedWood007C_1K-PNG_Color.png" />
     <Image Include="test.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="notepad.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
