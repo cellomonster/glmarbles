@@ -4,6 +4,7 @@
 #include "collision.h"
 
 using namespace glm;
+using namespace jtg::collision;
 
 namespace jtg
 {
@@ -14,7 +15,7 @@ namespace jtg
 			vec3 vel;
 			vec3 angVel;
 
-			col::Collider col;
+			collision::Collider col;
 		};
 
 		struct Contact
@@ -27,7 +28,7 @@ namespace jtg
 
 		struct World
 		{
-			std::vector<col::Collider> statics;
+			std::vector<collision::Collider> statics;
 			std::vector<Body> bodies;
 			
 		};

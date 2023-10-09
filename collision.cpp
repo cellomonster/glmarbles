@@ -4,20 +4,26 @@
 
 using namespace glm;
 
-bool jtg::col::SphereOnBox(SphereCol sphere, BoxCol box) {
+bool jtg::collision::SphereOnBox(const SphereCol& s, const BoxCol& b, vec3& point) {
 
-	vec3 sphereLocal = vec3((inverse(box.trans.mat) * sphere.trans.mat)[3]);
+	const vec3 sphereLocal = vec3((inverse(b.trans->mat) * s.trans->mat)[3]);
+	const vec3 closest = ClampToBox(sphereLocal, b.size);
 
-	vec3 closest = ClampToBox(sphereLocal, box.size);
+	const bool areTouching = distance(closest, sphereLocal) <= s.rad;
 
-	return distance(closest, sphereLocal) <= sphere.rad;
+	if(areTouching)
+	{
+		point = vec3((b.trans->mat * vec4(closest, 0))[3]);
+	}
+
+	return areTouching;
 }
 
-float clamp(float f, float min, float max) {
+float clamp(const float& f, const float& min, const float& max) {
 	return std::max(min, std::min(f, max));
 }
 
-vec3 jtg::col::ClampToBox(vec3 pos, vec3 size) {
+vec3 jtg::collision::ClampToBox(const vec3& pos, const vec3& size) {
 
 	vec3 extents = size * 0.5f;
 

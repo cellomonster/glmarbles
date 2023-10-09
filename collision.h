@@ -5,7 +5,7 @@
 using namespace glm;
 
 namespace jtg {
-	namespace col {
+	namespace collision {
 
 		struct Collider
 		{
@@ -20,8 +20,8 @@ namespace jtg {
 			float rad;
 		};
 
-		bool SphereOnBox(SphereCol sphere, BoxCol box);
-		vec3 ClampToBox(vec3 pos, vec3 size);
+		bool SphereOnBox(const SphereCol& s, const BoxCol& b, vec3& point);
+		vec3 ClampToBox(const vec3& pos, const vec3& size);
 
 	}
 }

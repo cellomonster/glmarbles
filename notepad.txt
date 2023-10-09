@@ -12,6 +12,8 @@ contact points requrie:
 		should be a simple distance function? something like linear velocity + dist * angular velocity
 			what is the velocity of a point on a sphere with x linear velocity and r radius?
 
+look into VISITOR PATTERN
+
 idea:
 	create contacts that store these all and reference the phys bodies
 	for each collision generate a contact, store them all in a vector, and then resolve each and delete
