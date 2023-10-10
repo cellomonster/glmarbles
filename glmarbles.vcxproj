@@ -133,7 +133,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
-    <ClInclude Include="collision.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="dynamics.h" />
     <ClInclude Include="mesh.h" />
@@ -149,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="collision.cpp" />
     <ClCompile Include="dynamics.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />

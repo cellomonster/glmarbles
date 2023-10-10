@@ -1,39 +1,54 @@
 #pragma once
 #include <vector>
 
-#include "collision.h"
+#include "transform.h"
 
 using namespace glm;
-using namespace jtg::collision;
 
 namespace jtg
 {
 	namespace dynamics
 	{
-		struct Body {
+		// referencing:
+		// https://rasmusbarr.github.io/blog/dod-physics.html
+
+		struct Body
+		{
 			Transform* trans;
+
+			float mass;
+			float moment;
+
 			vec3 vel;
 			vec3 angVel;
+		};
 
-			collision::Collider col;
+		struct Boxes
+		{
+			std::vector<vec3> sizes;
+			std::vector<Body> bodies;
+		};
+
+		struct Spheres
+		{
+			std::vector<float> radii;
+			std::vector<Body> bodies;
+		};
+
+		struct Colliders
+		{
+			Boxes boxes;
+			Spheres spheres;
 		};
 
 		struct Contact
 		{
 			Body bodyA, bodyB;
-			vec3 pointA, pointB;
-			vec3 normalA, normalB;
+			vec3 point, norm;
 		};
 
-
-		struct World
-		{
-			std::vector<collision::Collider> statics;
-			std::vector<Body> bodies;
-			
-		};
-
-		void Step(World world);
+		void Collide(std::vector<Contact> contacts, std::vector<Body> bodies, Colliders colliders);
+		void Simulate(std::vector<Contact> contacts, float deltaTime);
 
 	}
 }
