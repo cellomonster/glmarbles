@@ -6,17 +6,17 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "camera.h"
+#include "dynamics.h"
 #include "transform.h"
 #include "shader.h"
 #include "renderer.h"
 #include "mesh.h"
-#include "collider.h"
 
 
 struct Block {
 	jtg::Transform trans;
 	jtg::Renderer rend;
-	jtg::BoxCol col;
+	jtg::dynamics::BoxCollider col;
 
 	Block() {
 
@@ -33,19 +33,24 @@ struct Block {
 struct Marble {
 	jtg::Transform trans;
 	jtg::Renderer rend;
-	jtg::SphereCol col;
-	jtg::Body body;
+	jtg::dynamics::SphereCollider col;
+	jtg::dynamics::Body body;
 
 	Marble() {
 
 		rend.trans = &trans;
 		col.trans = &trans;
-		body.trans = &trans;
+
+		body = jtg::dynamics::Body();
+		body.mass = 1;
+
+		col.body = &body;
+		col.body->trans = &trans;
 
 		float rad = .5f;
 
 		rend.setMesh(jtg::polyhedronMesh(.5f));
-		col.rad = rad;
+		col.radius = rad;
 	}
 };
 

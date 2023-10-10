@@ -17,38 +17,44 @@ namespace jtg
 			Transform* trans;
 
 			float mass;
-			float moment;
+			mat3 moment;
 
-			vec3 vel;
+			glm::vec3 vel;
 			vec3 angVel;
 		};
 
-		struct Boxes
+		struct BoxCollider
 		{
-			std::vector<vec3> sizes;
-			std::vector<Body> bodies;
+			Transform* trans;
+			vec3 size;
+
+			Body* body;
 		};
 
-		struct Spheres
+		struct SphereCollider
 		{
-			std::vector<float> radii;
-			std::vector<Body> bodies;
+			Transform* trans;
+			float radius;
+
+			Body* body;
 		};
 
-		struct Colliders
+		struct World
 		{
-			Boxes boxes;
-			Spheres spheres;
+			std::vector<BoxCollider> boxes;
+			std::vector<SphereCollider> spheres;
+			std::vector<Body> bodies;
 		};
 
 		struct Contact
 		{
-			Body bodyA, bodyB;
-			vec3 point, norm;
+			Body* bodyA, bodyB;
+			vec3 point;
+			vec3 norm;
 		};
 
-		void Collide(std::vector<Contact> contacts, std::vector<Body> bodies, Colliders colliders);
-		void Simulate(std::vector<Contact> contacts, float deltaTime);
+		void Collide(std::vector<Contact> contacts, const World& world);
+		void Simulate(const std::vector<Contact>& contacts, World& world, float deltaTime);
 
 	}
 }

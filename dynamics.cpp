@@ -1,12 +1,14 @@
 #include "dynamics.h"
+#include <glm/gtx/projection.hpp>
 
 using namespace jtg;
 using namespace jtg::dynamics;
 
+Body staticBody;
+
 
 vec3 ClampToBox(const vec3& pos, const vec3& size) {
-
-	vec3 extents = size * 0.5f;
+	const vec3 extents = size * 0.5f;
 
 	vec3 p = pos;
 
@@ -18,18 +20,17 @@ vec3 ClampToBox(const vec3& pos, const vec3& size) {
 }
 
 
-bool SphereOnBox(const Transform& sphereTransform, const float& radius,
-	const Transform& boxTransform, const vec3& size, Contact& contact) {
+bool SphereOnBox(const SphereCollider& sphere, const BoxCollider& box, Contact& contact) {
 
-	const vec3 sphereLocal = vec3((inverse(boxTransform.mat) * sphereTransform.mat)[3]);
-	const vec3 closest = ClampToBox(sphereLocal, size);
+	const vec3 sphereLocal = vec3((inverse(box.trans->mat) * sphere.trans->mat)[3]);
+	const vec3 closest = ClampToBox(sphereLocal, box.size);
 
-	const bool areTouching = distance(closest, sphereLocal) <= radius;
+	const bool areTouching = distance(closest, sphereLocal) <= sphere.radius;
 
 	if (areTouching)
 	{
 		contact.point = closest;
-		contact.norm = normalize(sphereTransform.pos - closest);
+		contact.norm = normalize(sphere.trans->pos - closest);
 	}
 
 	return areTouching;
@@ -40,38 +41,52 @@ float clamp(const float& f, const float& min, const float& max) {
 }
 
 
-void dynamics::Collide(std::vector<Contact> contacts, std::vector<Body> bodies, Colliders colliders)
+void dynamics::Collide(std::vector<Contact> contacts, const World& world)
 {
 	// sphere on box only for now
-	for(int s = 0; s < colliders.spheres.radii.size(); s++)
+	for(int s = 0; s < world.spheres.size(); s++)
 	{
-		Body sphereBody = colliders.spheres.bodies[s];
-		float radius = colliders.spheres.radii[s];
+		const SphereCollider* sphere = &world.spheres[s];
 
-		for(int b = 0; b < colliders.boxes.sizes.size(); b++)
+		for(int b = 0; b < world.boxes.size(); b++)
 		{
-			Body boxBody = colliders.boxes.bodies[b];
-			vec3 size = colliders.boxes.sizes[b];
+			const BoxCollider* box = &world.boxes[b];
 
 			Contact contact;
-			contact.bodyA = sphereBody;
-			contact.bodyB = boxBody;
+			contact.bodyA = sphere->body;
 
-			if (SphereOnBox(*sphereBody.trans, radius, *boxBody.trans, size, contact)) {
+			if (SphereOnBox(*sphere, *box, contact)) {
 				contacts.push_back(contact);
 			}
 		}
 	}
 }
 
-void dynamics::Simulate(std::vector<Contact> contacts, float deltaTime)
+void dynamics::Simulate(const std::vector<Contact>& contacts, World& world, float deltaTime)
 {
 	for(int i = 0; i < contacts.size(); i++)
 	{
 		Contact contact = contacts[i];
 
-		float momentumA = 
+		// no support for other body yet
+		// one sphere in static world
 
-		contact.bodyA.trans->pos += 
+		vec3 momentumA = contact.bodyA->vel * contact.bodyA->mass;
+
+		vec3 impulse = proj(-momentumA, contact.norm);
+
+		contact.bodyA->vel += impulse / contact.bodyA->mass;
+	}
+
+	vec3 grav = vec3(0, -9.81f * deltaTime, 0);
+
+	for (int i = 0; i < world.bodies.size(); i++)
+	{
+		Body* body = &world.bodies[i];
+
+		body->trans->pos += body->vel * deltaTime;
+		body->trans->recalc();
+
+		body->vel += grav;
 	}
 }
