@@ -23,17 +23,23 @@ vec3 ClampToBox(const vec3& pos, const vec3& size) {
 bool SphereOnBox(const SphereCollider& sphere, const BoxCollider& box, Contact& contact) {
 
 	const vec3 sphereLocal = vec3((inverse(box.trans->mat) * sphere.trans->mat)[3]);
-	const vec3 closest = ClampToBox(sphereLocal, box.size);
+	const vec3 closestLocal = ClampToBox(sphereLocal, box.size);
 
-	const bool areTouching = distance(closest, sphereLocal) <= sphere.radius;
+	const bool areTouching = distance(closestLocal, sphereLocal) <= sphere.radius;
 
 	if (areTouching)
 	{
-		contact.point = closest;
-		contact.norm = normalize(sphere.trans->pos - closest);
+		const vec3 closestWorld = vec3(box.trans->mat * vec4(closestLocal, 1));
+		contact.point = closestWorld;
+		contact.norm = normalize(sphere.trans->pos - closestWorld);
 	}
 
 	return areTouching;
+}
+
+vec3 VelAtPoint(const Body& body, const vec3& point)
+{
+	return body.vel + cross(point - body.trans->pos, body.angVel);
 }
 
 float clamp(const float& f, const float& min, const float& max) {
@@ -41,16 +47,16 @@ float clamp(const float& f, const float& min, const float& max) {
 }
 
 
-void dynamics::Collide(std::vector<Contact> contacts, const World& world)
+void dynamics::Collide(std::vector<Contact>& contacts, const World& world)
 {
 	// sphere on box only for now
 	for(int s = 0; s < world.spheres.size(); s++)
 	{
-		const SphereCollider* sphere = &world.spheres[s];
+		const SphereCollider* sphere = world.spheres[s];
 
 		for(int b = 0; b < world.boxes.size(); b++)
 		{
-			const BoxCollider* box = &world.boxes[b];
+			const BoxCollider* box = world.boxes[b];
 
 			Contact contact;
 			contact.bodyA = sphere->body;
@@ -71,18 +77,19 @@ void dynamics::Simulate(const std::vector<Contact>& contacts, World& world, floa
 		// no support for other body yet
 		// one sphere in static world
 
-		vec3 momentumA = contact.bodyA->vel * contact.bodyA->mass;
+		if (dot(contact.bodyA->vel, contact.norm) > 0)
+			continue;
 
-		vec3 impulse = proj(-momentumA, contact.norm);
+		vec3 impulse = proj(-(contact.bodyA->vel), contact.norm);
 
-		contact.bodyA->vel += impulse / contact.bodyA->mass;
+		contact.bodyA->vel += impulse;
 	}
 
-	vec3 grav = vec3(0, -9.81f * deltaTime, 0);
+	const vec3 grav = vec3(0, -9.81f * deltaTime, 0);
 
 	for (int i = 0; i < world.bodies.size(); i++)
 	{
-		Body* body = &world.bodies[i];
+		Body* body = world.bodies[i];
 
 		body->trans->pos += body->vel * deltaTime;
 		body->trans->recalc();

@@ -19,7 +19,7 @@ namespace jtg
 			float mass;
 			mat3 moment;
 
-			glm::vec3 vel;
+			vec3 vel;
 			vec3 angVel;
 		};
 
@@ -41,9 +41,9 @@ namespace jtg
 
 		struct World
 		{
-			std::vector<BoxCollider> boxes;
-			std::vector<SphereCollider> spheres;
-			std::vector<Body> bodies;
+			std::vector<BoxCollider*> boxes;
+			std::vector<SphereCollider*> spheres;
+			std::vector<Body*> bodies;
 		};
 
 		struct Contact
@@ -53,7 +53,7 @@ namespace jtg
 			vec3 norm;
 		};
 
-		void Collide(std::vector<Contact> contacts, const World& world);
+		void Collide(std::vector<Contact>& contacts, const World& world);
 		void Simulate(const std::vector<Contact>& contacts, World& world, float deltaTime);
 
 	}
