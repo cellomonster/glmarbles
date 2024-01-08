@@ -1,29 +1,20 @@
 #pragma once
-
-
-#define _USE_MATH_DEFINES
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/geometric.hpp>
 
-namespace jtg {
+typedef struct jtgTransform {
+	glm::vec3 pos = glm::vec3(0);
+	glm::quat rot = glm::quat();
+	glm::vec3 pivot = glm::vec3(0);
+	float scale = 1;
+	glm::mat4 mat = glm::mat4(1);
 
-	class Transform {
+	void apply();
 
-	public:
-		static glm::quat eulerToQuat(glm::vec3 euler);
+	jtgTransform() = default;
+	jtgTransform(glm::vec3 pos);
+	jtgTransform(glm::vec3 pos, glm::quat rot, float scale);
 
-		glm::vec3 pivot = glm::vec3(0.0);
-		glm::vec3 pos = glm::vec3(0.0);
-		glm::quat rot = glm::quat(1.0, 0.0, 0.0, 0.0);
-		glm::vec3 scale = glm::vec3(1.0);
-
-		void recalc();
-
-		glm::mat4 mat = glm::mat4(1.0);
-
-	private:
-		void translate(glm::vec3 trans);
-		void rotate(glm::quat rot);
-		void scaleBy(glm::vec3 scale);
-	};
-};
+} jtgTransform;

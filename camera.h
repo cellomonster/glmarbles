@@ -7,27 +7,12 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "constants.h"
-#include "transform.h"
 #include "shader.h"
+#include "transform.h"
 
-namespace jtg {
+extern glm::vec3 jtgCamPos;
+extern glm::vec3 jtgCamForw;
 
-	class Camera: public Transform
-	{
-	public:
-		Camera();
-		
-		glm::vec3 forw = glm::vec3(0, 0, -1);
-		glm::mat4 proj = glm::mat4(1.0);
-
-		void orient(glm::vec3 pos, glm::vec3 forw);
-		void track(glm::vec3 target);
-
-		void updateUbo();
-
-	private:
-		unsigned int ubo;
-
-	};
-
-}
+void jtgCamSetup();
+void jtgCamOrient(glm::vec3 newPos, glm::vec3 newForw);
+void jtgCamTrack(glm::vec3 target);

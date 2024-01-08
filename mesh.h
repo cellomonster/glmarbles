@@ -3,13 +3,10 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-namespace jtg {
+typedef struct jtgMesh {
+	std::vector<float> verts;
+	std::vector<unsigned int> tris;
+} jtgMesh;
 
-	struct Mesh {
-		std::vector<float> verts;
-		std::vector<unsigned int> tris;
-	};
-
-	Mesh blockMesh(const glm::vec3& size);
-	Mesh polyhedronMesh(const float& r);
-}
+void jtgMeshBlock(jtgMesh& mesh, glm::vec3 size);
+void jtgMeshPolyhedron(jtgMesh& mesh, float radius);

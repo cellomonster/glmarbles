@@ -21,13 +21,10 @@
     <ClInclude Include="constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="renderer.h">
+    <ClInclude Include="rendering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
@@ -36,15 +33,18 @@
     <ClInclude Include="dynamics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamepieces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.fs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="texture.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="texture.vs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="vert.vs">
@@ -58,13 +58,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
+    <ClCompile Include="rendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
@@ -76,9 +73,15 @@
     <ClCompile Include="dynamics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamepieces.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="PaintedWood007C_1K-PNG_Color.png">
+    <Image Include="wood.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="test.png">
@@ -87,5 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="notepad.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="glmarbles.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

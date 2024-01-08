@@ -135,33 +135,37 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="dynamics.h" />
+    <ClInclude Include="gamepieces.h" />
     <ClInclude Include="mesh.h" />
-    <ClInclude Include="renderer.h" />
+    <ClInclude Include="rendering.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.fs" />
     <None Include="texture.fs" />
-    <None Include="texture.vs" />
     <None Include="vert.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="dynamics.cpp" />
+    <ClCompile Include="gamepieces.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="rendering.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="PaintedWood007C_1K-PNG_Color.png" />
+    <Image Include="wood.png" />
     <Image Include="test.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="notepad.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="glmarbles.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

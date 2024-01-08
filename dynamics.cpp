@@ -1,13 +1,14 @@
 #include "dynamics.h"
-#include <glm/gtx/projection.hpp>
 
-using namespace jtg;
-using namespace jtg::dynamics;
+using namespace glm;
 
-Body staticBody;
+jtgPhysBody staticBody;
 
+float clamp(const float& f, const float& min, const float& max) {
+	return std::max(min, std::min(f, max));
+}
 
-vec3 ClampToBox(const vec3& pos, const vec3& size) {
+vec3 ClampToBox(const glm::vec3& pos, const glm::vec3& size) {
 	const vec3 extents = size * 0.5f;
 
 	vec3 p = pos;
@@ -19,8 +20,7 @@ vec3 ClampToBox(const vec3& pos, const vec3& size) {
 	return p;
 }
 
-
-bool SphereOnBox(const SphereCollider& sphere, const BoxCollider& box, Contact& contact) {
+bool SphereOnBox(const jtgSphereCollider& sphere, const jtgBoxCollider& box, jtgPhysCollision& contact) {
 
 	const vec3 sphereLocal = vec3((inverse(box.trans->mat) * sphere.trans->mat)[3]);
 	const vec3 closestLocal = ClampToBox(sphereLocal, box.size);
@@ -37,42 +37,46 @@ bool SphereOnBox(const SphereCollider& sphere, const BoxCollider& box, Contact& 
 	return areTouching;
 }
 
-vec3 VelAtPoint(const Body& body, const vec3& point)
+vec3 VelAtPoint(const jtgPhysBody& body, const vec3& point)
 {
 	return body.vel + cross(point - body.trans->pos, body.angVel);
 }
 
-float clamp(const float& f, const float& min, const float& max) {
-	return std::max(min, std::min(f, max));
-}
-
-
-void dynamics::Collide(std::vector<Contact>& contacts, const World& world)
+void jtgPhysCollisionGroup::findCollisions(std::vector<jtgPhysCollision>& collisions)
 {
+	collisions.clear();
+
 	// sphere on box only for now
-	for(int s = 0; s < world.spheres.size(); s++)
+	for (int s = 0; s < this->spheres.size(); s++)
 	{
-		const SphereCollider* sphere = world.spheres[s];
+		const jtgSphereCollider* sphere = this->spheres[s];
 
-		for(int b = 0; b < world.boxes.size(); b++)
+		for (int b = 0; b < this->boxes.size(); b++)
 		{
-			const BoxCollider* box = world.boxes[b];
+			const jtgBoxCollider* box = this->boxes[b];
 
-			Contact contact;
-			contact.bodyA = sphere->body;
+			jtgPhysCollision collision;
+			collision.bodyA = sphere->body;
 
-			if (SphereOnBox(*sphere, *box, contact)) {
-				contacts.push_back(contact);
+			if (SphereOnBox(*sphere, *box, collision)) {
+				collisions.push_back(collision);
 			}
 		}
 	}
 }
 
-void dynamics::Simulate(const std::vector<Contact>& contacts, World& world, float deltaTime)
+jtgPhysWorld::jtgPhysWorld(jtgPhysCollisionGroup* collisionGroup)
 {
-	for(int i = 0; i < contacts.size(); i++)
+	this->collisionGroup = collisionGroup;
+}
+
+void jtgPhysWorld::step(float deltaTime) {
+
+	this->collisionGroup->findCollisions(this->collisions);
+	
+	for (int i = 0; i < this->collisions.size(); i++)
 	{
-		Contact contact = contacts[i];
+		jtgPhysCollision contact = this->collisions[i];
 
 		// no support for other body yet
 		// one sphere in static world
@@ -83,17 +87,53 @@ void dynamics::Simulate(const std::vector<Contact>& contacts, World& world, floa
 		vec3 impulse = proj(-(contact.bodyA->vel), contact.norm);
 
 		contact.bodyA->vel += impulse;
+		
+		// todo depenetration
 	}
 
 	const vec3 grav = vec3(0, -9.81f * deltaTime, 0);
 
-	for (int i = 0; i < world.bodies.size(); i++)
+	for (int i = 0; i < this->bodies.size(); i++)
 	{
-		Body* body = world.bodies[i];
+		jtgPhysBody* body = this->bodies[i];
 
+		// apply velocity
 		body->trans->pos += body->vel * deltaTime;
-		body->trans->recalc();
+		body->trans->apply();
 
+		// gravity applied for next step
 		body->vel += grav;
 	}
+}
+
+jtgPhysBody::jtgPhysBody(jtgTransform* trans, float mass)
+{
+	this->trans = trans;
+	this->mass = mass;
+}
+
+jtgBoxCollider::jtgBoxCollider(jtgTransform* trans, glm::vec3 size)
+{
+	this->trans = trans;
+	this->size = size;
+}
+
+jtgBoxCollider::jtgBoxCollider(jtgTransform* trans, glm::vec3 size, jtgPhysBody* body)
+{
+	this->trans = trans;
+	this->size = size;
+	this->body = body;
+}
+
+jtgSphereCollider::jtgSphereCollider(jtgTransform* trans, float radius)
+{
+	this->trans = trans;
+	this->radius = radius;
+}
+
+jtgSphereCollider::jtgSphereCollider(jtgTransform* trans, float radius, jtgPhysBody* body)
+{
+	this->trans = trans;
+	this->radius = radius;
+	this->body = body;
 }

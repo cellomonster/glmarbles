@@ -3,64 +3,19 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/geometric.hpp>
+#include <glm/vec4.hpp>
 #include <glm/gtx/string_cast.hpp>
 
 #include "camera.h"
 #include "dynamics.h"
 #include "transform.h"
 #include "shader.h"
-#include "renderer.h"
+#include "rendering.h"
 #include "mesh.h"
 
-jtg::dynamics::World world;
-std::vector<jtg::dynamics::Contact> contacts;
-
-struct Block {
-	jtg::Transform trans;
-	jtg::Renderer rend;
-	jtg::dynamics::BoxCollider col;
-
-	Block() {
-
-		rend.trans = &trans;
-		col.trans = &trans;
-
-		world.boxes.push_back(&col);
-	}
-
-	void setSize(vec3 size) {
-		rend.setMesh(jtg::blockMesh(size));
-		col.size = size;
-	}
-};
-
-struct Marble {
-	jtg::Transform trans;
-	jtg::Renderer rend;
-	jtg::dynamics::SphereCollider col;
-	jtg::dynamics::Body body;
-
-	Marble() {
-
-		rend.trans = &trans;
-		col.trans = &trans;
-
-		body = jtg::dynamics::Body();
-		body.mass = 1;
-
-		col.body = &body;
-		col.body->trans = &trans;
-
-		float rad = .5f;
-
-		rend.setMesh(jtg::polyhedronMesh(.5f));
-		col.radius = rad;
-
-		world.spheres.push_back(&col);
-		world.bodies.push_back(&body);
-	}
-};
-
+#include "gamepieces.h"
 
 void OnFramebufferSize(GLFWwindow* window, int width, int height)
 {
@@ -103,53 +58,68 @@ int main()
 
 	// init game
 
-	jtg::Camera cam;
-	cam.recalc();
-	cam.orient(glm::vec3(0, 1, 5), glm::vec3(0, 0, -1));
+	jtgCamSetup();
+	jtgCamOrient(glm::vec3(0, 1, 4), glm::vec3(0, 0, -1));
 
-	Block block;
-	block.setSize(glm::vec3(3, 1, 3));
-	block.trans.pos = glm::vec3(0, 0, 0);
-	block.trans.rot = jtg::Transform::eulerToQuat(vec3(-30, 0, 0));
-	block.trans.recalc();
+	jtgTransformShader mainShader = jtgTransformShader(jtgShaderBuild("vert.vs", "frag.fs"));
 
-	Block b2;
-	b2.setSize(glm::vec3(3, 1, 3));
-	b2.trans.pos = glm::vec3(-3, -3, 0);
-	b2.trans.rot = jtg::Transform::eulerToQuat(vec3(30, 0, 0));
-	b2.trans.recalc();
+	jtgPhysCollisionGroup mainCollisionGroup;
+	jtgPhysWorld physWorld = jtgPhysWorld(&mainCollisionGroup);
 
-	/*Block b3;
-	b3.setSize(glm::vec3(3, 1, 3));
-	b3.trans.pos = glm::vec3(3, -3, 0);
-	b3.trans.rot = jtg::Transform::eulerToQuat(vec3(0, 0, 30));
-	b3.trans.recalc();*/
+	jtgShaderGroup shaderGroup = jtgShaderGroup(&mainShader);
 
-	Marble marble;
-	marble.trans.pos = glm::vec3(0, 3.0f, 0);
-	marble.trans.recalc();
+	jtgMarble marble = jtgMarble(shaderGroup, physWorld);
+	marble.trans.pos = glm::vec3(0, 3, 0);
+	marble.trans.apply();
+
+	std::vector<jtgBlock> blocks;
+
+	jtgBlock block = jtgBlock(glm::vec3(5, 1, 5), shaderGroup, physWorld);
+	block.trans.pos = glm::vec3(0, -3, 0);
+	block.trans.rot = glm::quat(glm::vec3(0, 0, 0.01));
+	block.trans.apply();
+	blocks.push_back(block);
+
+	const glm::vec3 camOffset = glm::vec3(0, 1, -3);
+
+
+	// end init
+
+	const float dt = 0.05f;
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
-		t += 0.05f;
+		t += dt;
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0, 0, 0, 1);
+		glClearColor(.5f, 0.7f, 1, 1);
 
 		glfwPollEvents();
 
-		// draw
+		// update phys
 
-		cam.updateUbo();
+		physWorld.step(dt);
 
-		Collide(contacts, world);
-		Simulate(contacts, world, 0.01f);
-		contacts.clear();
+		// reset marble if fallen
 
-		block.rend.render();
-		b2.rend.render();
-		//b3.rend.render()
-		marble.rend.render();
+		if (marble.trans.pos.y < -10) {
+			marble.trans.pos = glm::vec3(0);
+			marble.trans.apply();
+
+			marble.body.vel = glm::vec3(0);
+		}
+
+		// update cam
+
+		glm::vec3 camTargetPos = marble.trans.pos + camOffset;
+		glm::vec3 camDiff = camTargetPos - jtgCamPos;
+		glm::vec3 camTargetForw = jtgCamPos - marble.trans.pos;
+
+		jtgCamOrient(jtgCamPos + camDiff * dt * 10.0f, marble.trans.pos); 
+
+		// render
+
+		shaderGroup.render();
 
 		glfwSwapBuffers(mainWindow);
 	}

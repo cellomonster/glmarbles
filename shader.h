@@ -7,24 +7,20 @@
 #include <sstream>
 #include <iostream>
 
-namespace jtg {
+typedef struct jtgTransformShader {
+	unsigned int id;
+	unsigned int transUnifLoc;
 
+	jtgTransformShader() = default;
+	jtgTransformShader(unsigned int id);
 
-	class Shader {
-	public:
-		unsigned int id = 0;
+	void use();
+	void applyTransform(const glm::mat4& trans);
 
-		Shader(std::string vertexPath = "vert.vs", std::string fragmentPath = "frag.fs");
+} jtgTransformShader;
 
-		void use() const;
-		void transform(glm::mat4 mat) const;
+extern unsigned int jtgShaderCurrentlyBound;
+extern jtgTransformShader* jtgTransformShaderCurrent;
 
-	private:
-		unsigned int compProgram(const char* vertSource, const char* fragSource, int* success, char* log);
-		unsigned int compShader(const char* source, int type, int* success, char* log);
-		std::string simpleRead(std::string path);
-
-
-	};
-
-};
+void jtgShaderUse(unsigned int shaderId);
+unsigned int jtgShaderBuild(std::string vertPath, std::string fragPath);
